@@ -54,15 +54,37 @@ function dateToIso() {
     echo "${year}-${month}-${day}T00:00:00+00:00"
 }
 
+# Get the name of a discord given a Guild Id
+function getDiscordName() {
+    previewUrl="https://discord.com/api/v9/guilds/${GUILD_ID}/preview"
+    discordName=""
+
+    while [[ -z "$discordName" ]]
+    do
+        discordName=$(curl -s -H curl -s -H "Authorization: ${TOKEN}" -H "Accept: application/json" $previewUrl \
+            | python3 -m json.tool \
+            | grep 'name' \
+            | head -n 1 \
+            | cut -d":" -f 2 \
+            | sed -e 's/,//' -e 's/"//g'
+        )
+    done
+
+    echo $discordName
+}
+
 echo 'Date,Messages' > $tmpDailyMessages
 
-# Get the number of messages between two dates
+# Setup variables
+discordName=$(getDiscordName)
 lbISO=$(dateToIso $START_DATE)
 ubISO=$(dateToIso $END_DATE)
 lbTimestamp=$(isoToUnix $lbISO)
 ubTimestamp=$(isoToUnix $ubISO)
 numDays=$(((ubTimestamp - lbTimestamp) / DAY_LENGTH + 1))
 
+# Get the number of messages between two dates
+echo "Fetching messages in ${discordName}"
 timestamp=$lbTimestamp
 subUrl="https://discord.com/api/v9/guilds/${GUILD_ID}/messages/search?"
 [[ ! -z "$CHANNEL_ID" ]] && subUrl="${subUrl}channel_id=${CHANNEL_ID}&"
@@ -79,15 +101,16 @@ do
         | python3 -m json.tool \
         | grep 'total_results' \
         | cut -d":" -f 2 \
-        | sed 's/,//'
+        | sed -e 's/,//' -e 's/ //'
     )
-    percentage=$(awk '{print ($1-$2)/($3-$2)*100 }' <<< "${timestamp} ${lbTimestamp} ${ubTimestamp}" | sed 's/\..*//' )
+    percentage=$(awk '{ print ($1-$2)/($3-$2)*100 }' <<< "${timestamp} ${lbTimestamp} ${ubTimestamp}" | sed 's/\..*//' )
     progressBar $percentage
     [[ ! -z "$numMessages" ]] && echo "${date},${numMessages}" >> $tmpDailyMessages && timestamp=$((timestamp + DAY_LENGTH)) && sleep 1
 done
 
+# Plot CSV on a graph
 gnuplot -persist <<-EOFMarker
-    set title "Discord Messages Each Day (X Studios)"
+    set title "Discord Messages Each Day (${discordName})"
     set key top left
     set grid
     set datafile separator ","
