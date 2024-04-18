@@ -82,6 +82,7 @@ ubISO=$(dateToIso $END_DATE)
 lbTimestamp=$(isoToUnix $lbISO)
 ubTimestamp=$(isoToUnix $ubISO)
 numDays=$(((ubTimestamp - lbTimestamp) / DAY_LENGTH + 1))
+pauseTime=$(awk '{ print ($1/1000) }' <<< $([[ -z "$PAUSE_MILLIS" ]] && echo 500 || echo $PAUSE_MILLIS))
 
 # Get the number of messages between two dates
 echo "Fetching messages in ${discordName}"
@@ -105,7 +106,7 @@ do
     )
     percentage=$(awk '{ print ($1-$2)/($3-$2)*100 }' <<< "${timestamp} ${lbTimestamp} ${ubTimestamp}" | sed 's/\..*//' )
     progressBar $percentage
-    [[ ! -z "$numMessages" ]] && echo "${date},${numMessages}" >> $tmpDailyMessages && timestamp=$((timestamp + DAY_LENGTH)) && sleep 1
+    [[ ! -z "$numMessages" ]] && echo "${date},${numMessages}" >> $tmpDailyMessages && timestamp=$((timestamp + DAY_LENGTH)) && sleep $pauseTime
 done
 
 # Plot CSV on a graph
