@@ -1,0 +1,8 @@
+# Must include
+TOKEN=
+GUILD_ID=
+START_DATE=
+END_DATE=
+
+# Optional (can be left blank)
+CHANNEL_ID=
