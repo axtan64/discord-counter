@@ -5,7 +5,7 @@ I'm a massive statistics nerd, so what better way to fill my statistical needs t
 
 <div align="center">
   <a href="https://github.com/axtan64/discord-counter">
-    <img src="images/plot1.png" alt="Logo" width="80" height="80">
+    <img src="images/plot1.png" alt="Logo">
   </a>
 
 
