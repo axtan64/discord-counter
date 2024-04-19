@@ -55,6 +55,7 @@ Inside of the config.txt file, fill out the required fields (and any optional fi
 And optionally:
 * A specific Channel Id you'd only like to scrape
 * A pause between requests (in an attempt to reduce throttling, DEFAULT=1000ms)
+* A day interval (e.g. DAY_INTERVAL=7 would fetch the number of messages per week, DEFAULT=1)
 
 Run the command `./count.sh` inside of the docker container.
 
