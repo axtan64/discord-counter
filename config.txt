@@ -7,3 +7,4 @@ END_DATE=
 # Optional (can be left blank)
 CHANNEL_ID=
 PAUSE_MILLIS=1000
+DAY_INTERVAL=
