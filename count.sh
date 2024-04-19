@@ -20,7 +20,8 @@ ubISO=$(date::dateToIso $END_DATE)
 lbTimestamp=$(date::isoToUnix $lbISO)
 ubTimestamp=$(date::isoToUnix $ubISO)
 pauseTime=$(awk '{ print ($1/1000) }' <<< ${PAUSE_MILLIS:-1000})
-interval=$(($DAY_LENGTH * ${DAY_INTERVAL:-1}))
+DAY_INTERVAL=${DAY_INTERVAL:-1}
+interval=$(($DAY_LENGTH * $DAY_INTERVAL))
 
 # Get the number of messages between two dates
 echo "Fetching messages in ${discordName}${channelName:+" (${channelName})"}"
@@ -48,4 +49,5 @@ do
 done
 progressBar::show 100
 
-/bin/bash plot.sh $tmpDailyMessages "Discord Messages Each Day (${discordName})${channelName:+" (${channelName})"}"
+title="Discord Messages Every$(test $DAY_INTERVAL -gt 1 && echo " ${DAY_INTERVAL}") Day$(test $DAY_INTERVAL -gt 1 && echo s) (${discordName})${channelName:+" (${channelName})"}"
+/bin/bash plot.sh "$tmpDailyMessages" "$title"
